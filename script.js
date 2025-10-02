@@ -1,15 +1,79 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- SLIDER AUTOMÁTICO ---
+
+    const POTATO_IMAGE_PATH = 'imagenes/papita.png'; 
+    const BALLOON_IMAGE_PATH = 'imagenes/globo.png';
+
+    document.querySelectorAll('.menu-link').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+
+            if (targetElement) {
+                // Realiza el scroll suave
+                window.scrollTo({
+                    top: targetElement.offsetTop - document.getElementById('cabecera').offsetHeight,
+                    behavior: 'smooth'
+                });
+
+                // Llama a la función para la lluvia de papitas
+                startPotatoRain();
+            }
+        });
+    });
+    let potatoInterval;
+    const potatoContainer = document.createElement('div');
+    potatoContainer.id = 'potato-rain-container'; 
+    document.body.appendChild(potatoContainer);
+
+    function createPotato() {
+        const potato = document.createElement('img');
+        
+        potato.src = POTATO_IMAGE_PATH;
+        potato.alt = 'Papita'; 
+        potato.classList.add('potato-drop'); 
+
+        potato.style.left = `${Math.random() * 100}vw`;
+
+        const duration = Math.random() * 3 + 2; 
+        potato.style.animationDuration = `${duration}s`;
+
+        potatoContainer.appendChild(potato);
+
+        potato.addEventListener('animationend', () => {
+            potato.remove();
+        });
+    }
+
+    function startPotatoRain() {
+        if (potatoInterval) {
+            clearInterval(potatoInterval);
+        }
+
+        potatoInterval = setInterval(createPotato, 100);
+
+        setTimeout(() => {
+            clearInterval(potatoInterval);
+        }, 5000);
+    }
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');
     const totalSlides = slides.length;
     let currentIndex = 0;
     const intervalTime = 4000;
+    const body = document.body; 
 
     function showSlide(index) {
-        if (index >= totalSlides) currentIndex = 0;
-        else if (index < 0) currentIndex = totalSlides - 1;
-        else currentIndex = index;
+        if (index >= totalSlides) {
+            currentIndex = 0;
+        } else if (index < 0) {
+            currentIndex = totalSlides - 1;
+        } else {
+            currentIndex = index;
+        }
 
         slides.forEach(slide => slide.classList.remove('active'));
         dots.forEach(dot => dot.classList.remove('active'));
@@ -25,20 +89,75 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let sliderInterval = setInterval(autoPlay, intervalTime);
 
+    // 1. Detección de clic en los DOTS (solo para navegar)
     dots.forEach(dot => {
         dot.addEventListener('click', (e) => {
             clearInterval(sliderInterval);
+
             const slideIndex = parseInt(e.target.dataset.slide);
             showSlide(slideIndex);
+
             sliderInterval = setInterval(autoPlay, intervalTime);
         });
     });
 
-    showSlide(currentIndex);
-});
+    
+    slides.forEach(slide => {
+        slide.addEventListener('click', () => {
+            // Activa/desactiva el modo Neón
+            body.classList.toggle('neon-mode');
+            if (body.classList.contains('neon-mode')) {
+                startBalloonFloat();
+            } else {
+                stopBalloonFloat();
+            }
+        });
+    });
 
-// --- FUEGOS ARTIFICIALES ---
-document.addEventListener('DOMContentLoaded', function () {
+    showSlide(currentIndex);
+    let balloonInterval;
+    const balloonContainer = document.createElement('div');
+    balloonContainer.id = 'balloon-container';
+    document.body.appendChild(balloonContainer);
+
+    function createBalloon() {
+        const balloon = document.createElement('img');
+        
+        balloon.src = BALLOON_IMAGE_PATH;
+        balloon.classList.add('balloon-drop');
+
+        balloon.style.left = `${Math.random() * 100}vw`;
+
+        const duration = Math.random() * 10 + 7;
+        balloon.style.animationDuration = `${duration}s`;
+
+        // Pequeño retraso de inicio para escalonar
+        const delay = Math.random() * 5; 
+        balloon.style.animationDelay = `-${delay}s`;
+
+        balloonContainer.appendChild(balloon);
+        balloon.addEventListener('animationend', () => {
+            balloon.remove();
+        });
+    }
+
+    function startBalloonFloat() {
+        // Asegúrate de que no haya otro intervalo corriendo
+        if (balloonInterval) {
+            clearInterval(balloonInterval);
+        }
+
+        // Crea un nuevo globo cada 400 milisegundos (ajusta si quieres más/menos)
+        balloonInterval = setInterval(createBalloon, 400); 
+    }
+    
+    function stopBalloonFloat() {
+       
+        if (balloonInterval) {
+            clearInterval(balloonInterval);
+        }
+    }
+
     const canvas = document.getElementById('fireworksCanvas');
     if (!canvas) return;
 
@@ -51,6 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
         canvas.width = canvas.parentElement.clientWidth;
         canvas.height = canvas.parentElement.clientHeight;
     }
+
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
@@ -62,9 +182,13 @@ document.addEventListener('DOMContentLoaded', function () {
             this.targetY = targetY;
             this.speed = 2;
             this.angle = Math.atan2(targetY - y, targetX - x);
-            this.distance = Math.hypot(targetX - x, targetY - y);
+            this.distance = Math.sqrt((targetX - x) ** 2 + (targetY - y) ** 2);
             this.traveled = 0;
-            this.coordinates = Array(3).fill([this.x, this.y]);
+            this.coordinates = [];
+            this.coordinateCount = 3;
+            while (this.coordinateCount--) {
+                this.coordinates.push([this.x, this.y]);
+            }
             this.hue = hue;
             this.brightness = Math.random() * 40 + 70;
         }
@@ -80,7 +204,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             this.x += Math.cos(this.angle) * this.speed;
             this.y += Math.sin(this.angle) * this.speed;
-            this.traveled = Math.hypot(this.targetX - this.x, this.targetY - this.y);
+            const dx = this.targetX - this.x;
+            const dy = this.targetY - this.y;
+            this.traveled = this.distance - Math.sqrt(dx * dx + dy * dy);
+
             return false;
         }
 
@@ -93,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         createParticles() {
-            let particleCount = Math.random() * 40 + 60; // reducido para mejor rendimiento
+            let particleCount = Math.random() * 120 + 200;
             while (particleCount--) {
                 particles.push(new Particle(this.targetX, this.targetY, this.hue));
             }
@@ -105,14 +232,18 @@ document.addEventListener('DOMContentLoaded', function () {
             this.x = x;
             this.y = y;
             this.angle = Math.random() * Math.PI * 2;
-            this.speed = Math.random() * 8 + 4;
-            this.friction = 0.92;
-            this.gravity = 0.7;
-            this.coordinates = Array(6).fill([this.x, this.y]);
+            this.speed = Math.random() * 20 + 8;
+            this.friction = 0.93;
+            this.gravity = 0.8;
+            this.coordinates = [];
+            this.coordinateCount = 6;
+            while (this.coordinateCount--) {
+                this.coordinates.push([this.x, this.y]);
+            }
             this.hue = hue;
             this.brightness = Math.random() * 70 + 30;
             this.alpha = 1;
-            this.decay = Math.random() * 0.015 + 0.005;
+            this.decay = Math.random() * 0.015 + 0.003;
         }
 
         update() {
@@ -164,44 +295,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        if (Math.random() < 0.03) { // menos frecuencia
-            let startX = canvas.width / 2;
-            let startY = canvas.height;
-            let targetX = Math.random() * (canvas.width - 200) + 100;
-            let targetY = Math.random() * (canvas.height / 2);
+        if (Math.random() < 0.05) {
+            const startX = Math.random() * (canvas.width - 200) + 100;
+            const startY = canvas.height;
+            const targetX = Math.random() * (canvas.width - 200) + 100;
+            const targetY = Math.random() * (canvas.height / 2);
             fireworks.push(new Firework(startX, startY, targetX, targetY));
         }
     }
 
     loop();
-});
-
-// --- LLUVIA DE PAPITAS ---
-function lluviaPapitas() {
-    const papita = document.createElement("div");
-    papita.classList.add("papita");
-
-    papita.style.left = Math.random() * window.innerWidth + "px";
-    papita.style.top = "-80px";
-
-    const size = Math.random() * 40 + 40;
-    papita.style.width = size + "px";
-    papita.style.height = size + "px";
-
-    document.body.appendChild(papita);
-
-    setTimeout(() => papita.remove(), 4000);
-}
-
-document.querySelectorAll(".menu-link").forEach(link => {
-    link.addEventListener("click", (e) => {
-        e.preventDefault();
-
-        const target = document.querySelector(link.getAttribute("href"));
-        target.scrollIntoView({ behavior: "smooth" });
-
-        for (let i = 0; i < 8; i++) { // menos papitas -> menos lag
-            setTimeout(lluviaPapitas, i * 250);
-        }
-    });
 });
