@@ -1,4 +1,4 @@
-
+/* VARIABLES GLOBALES */
 :root {
     --color-primario: #c57b47;
     --color-secundario: #f1cb99;
@@ -9,18 +9,15 @@
     --transition-speed: 0.7s;
 }
 
+/* ESTILOS BASE Y CUERPO (CON PATRÓN SUTIL) */
 body {
-
     background-image:
         repeating-linear-gradient(
             -45deg,
-            /* Diagonal */
             rgba(255, 255, 255, 0.05) 0px,
-            /* Línea blanca muy transparente */
             rgba(255, 255, 255, 0.05) 1px,
             transparent 1px,
             transparent 15px
-            /* Espacio transparente */
         ),
         linear-gradient(
             to bottom,
@@ -37,6 +34,9 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+
+    /* Centrar todo el texto e inline-blocks */
+    text-align: center; 
 
     transition: all var(--transition-speed) ease-in-out;
 }
@@ -60,6 +60,7 @@ h2 {
     transition: all var(--transition-speed);
 }
 
+/* CABECERA Y NAVEGACIÓN */
 #cabecera {
     background-color: var(--color-primario);
     color: var(--color-texto-cabecera);
@@ -74,6 +75,8 @@ h2 {
 .logo-container {
     display: flex;
     align-items: center;
+    /* Centrar el logo y el título en la cabecera */
+    justify-content: center;
     width: auto;
     margin-bottom: 10px;
 }
@@ -88,7 +91,6 @@ h2 {
 
 nav {
     width: 100%;
-    text-align: center;
 }
 
 .menu-horizontal {
@@ -96,10 +98,12 @@ nav {
     padding: 0;
     margin: 0;
     display: flex;
+    /* Centrar los enlaces del menú */
     justify-content: center;
     gap: 30px;
 }
 
+/* Estilo de los botones del menú */
 .menu-link {
     text-decoration: none;
     color: var(--color-texto-cabecera);
@@ -116,13 +120,16 @@ nav {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+/* SLIDER */
 .slider-container {
     position: relative;
     width: 100%;
+    max-width: 900px;
     height: 450px;
     overflow: hidden;
     background-color: var(--color-secundario);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    margin: 0 auto; /* Centrar el contenedor del slider */
     transition: all var(--transition-speed);
 }
 
@@ -174,19 +181,19 @@ nav {
     transform: scale(1.3);
 }
 
+/* SECCIONES DE CONTENIDO (Transparencia) */
 .video-section,
 .content-section {
     padding: 50px 30px;
     max-width: 900px;
+    /* Centrar los contenedores de contenido */
     margin: 50px auto;
-    text-align: center;
     font-size: 1.1em;
     line-height: 1.7;
 
     background-color: transparent;
 
     border-radius: 12px;
-
     box-shadow: 0 10px 30px rgba(255, 255, 255, 0.4),
         0 0 15px rgba(0, 0, 0, 0.2);
 
@@ -208,7 +215,8 @@ nav {
     height: 0;
     overflow: hidden;
     max-width: 100%;
-    margin-top: 25px;
+    /* Centrar el contenedor de video dentro de la sección */
+    margin: 25px auto 0;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     border-radius: 8px;
     cursor: pointer;
@@ -230,9 +238,14 @@ nav {
 .video-container img:hover {
     transform: scale(1.05);
 }
+
+/* FUEGOS ARTIFICIALES Y SEPARADOR 'B' */
 #paratigel {
     position: relative;
     overflow: hidden;
+    max-width: 900px;
+    /* Centrar la sección de fuegos artificiales */
+    margin: 50px auto;
 }
 
 #fireworksCanvas {
@@ -257,6 +270,7 @@ nav {
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Centrar el divisor */
     margin: 20px auto;
     width: 80%;
     color: var(--color-primario);
@@ -266,193 +280,3 @@ nav {
 }
 
 .bro-divider::before,
-.bro-divider::after {
-    content: "";
-    flex-grow: 1;
-    height: 1px;
-    background-color: var(--color-secundario);
-    margin: 0 10px;
-    transition: background-color var(--transition-speed);
-}
-
-#balloon-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 9998;
-    opacity: 0;
-    transition: opacity var(--transition-speed) ease-in-out;
-}
-
-.balloon-drop {
-    position: absolute;
-    bottom: -100px;
-    width: 60px;
-    height: 80px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    
-    animation-name: float;
-    animation-timing-function: linear;
-    animation-fill-mode: forwards;
-}
-
-@keyframes float {
-    0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 0.8;
-    }
-
-    100% {
-        transform: translateY(-100vh) rotate(360deg);
-        opacity: 0.1;
-    }
-}
-
-#potato-rain-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    pointer-events: none;
-
-    z-index: 9999;
-}
-
-.potato-drop {
-    position: absolute;
-    top: -50px;
-
-    width: 40px;
-    height: 40px;
-
-    animation-name: fall;
-    animation-timing-function: linear;
-    animation-fill-mode: forwards;
-}
-
-@keyframes fall {
-    0% {
-        transform: translateY(-50px) rotate(0deg);
-        opacity: 1;
-    }
-
-    100% {
-        transform: translateY(100vh) rotate(720deg);
-        opacity: 0.5;
-    }
-}
-
-footer {
-    padding: 15px;
-    background-color: #333;
-    color: white;
-    text-align: center;
-    margin-top: auto;
-}
-
-.neon-mode {
-
-    --color-primario: #00f0f0;
-    --color-secundario: #f000f0;
-    --color-texto-principal: #ffffff;
-    background-image: none !important;
-    background-color: #111111;
-    box-shadow: 0 0 50px var(--color-primario);
-}
-
-.neon-mode h1,
-.neon-mode h2,
-.neon-mode .bro-divider {
-    color: var(--color-secundario);
-    text-shadow:
-        0 0 10px var(--color-secundario),
-        0 0 20px var(--color-secundario),
-        0 0 30px var(--color-primario);
-    transition: all var(--transition-speed);
-}
-
-.neon-mode h2 {
-    border-bottom: 2px solid var(--color-primario);
-}
-
-.neon-mode p {
-    color: #eeeeee;
-}
-
-.neon-mode .video-section,
-.neon-mode .content-section,
-.neon-mode #cabecera {
-    background-color: rgba(0, 0, 0, 0.5);
-    box-shadow:
-        0 0 20px rgba(0, 240, 240, 0.8),
-        0 0 40px rgba(240, 0, 240, 0.4);
-    border: 1px solid var(--color-primario);
-}
-
-.neon-mode .menu-link {
-    color: var(--color-secundario);
-    text-shadow: 0 0 5px var(--color-secundario);
-}
-
-.neon-mode .menu-link:hover {
-    background-color: var(--color-primario);
-    color: #000000;
-    box-shadow: 0 0 15px var(--color-primario);
-}
-
-.neon-mode .dot {
-    background-color: rgba(240, 0, 240, 0.7);
-    border: 2px solid var(--color-primario);
-}
-
-.neon-mode .dot.active,
-.neon-mode .dot:hover {
-    background-color: var(--color-primario);
-    box-shadow: 0 0 10px var(--color-primario);
-}
-.neon-mode #balloon-container {
-    opacity: 1; /* ¡Muestra los globos al activar el modo Neón! */
-}
-@media (max-width: 768px) {
-    /* Ajusta el tamaño de los títulos para pantallas pequeñas */
-    h1 {
-        font-size: 1.8em;
-    }
-
-    h2 {
-        font-size: 1.5em;
-    }
-
-    #cabecera {
-        padding: 10px 15px;
-    }
-    .menu-horizontal {
-        flex-direction: column;
-        gap: 5px;
-        margin-top: 5px;
-    }
-
-    .menu-link {
-        padding: 5px 10px;
-        display: block;
-        width: 100%;
-        text-align: center;
-    }
-    
-    .slider-container {
-        height: 300px;
-    }
-
-    .video-section,
-    .content-section {
-        padding: 30px 15px;
-        margin: 30px auto;
-    }
-}
