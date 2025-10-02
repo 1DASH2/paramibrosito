@@ -417,8 +417,42 @@ footer {
     background-color: var(--color-primario);
     box-shadow: 0 0 10px var(--color-primario);
 }
-
-/* 10E. Efectos Adicionales (Globos) */
 .neon-mode #balloon-container {
     opacity: 1; /* ¡Muestra los globos al activar el modo Neón! */
+}
+@media (max-width: 768px) {
+    /* Ajusta el tamaño de los títulos para pantallas pequeñas */
+    h1 {
+        font-size: 1.8em;
+    }
+
+    h2 {
+        font-size: 1.5em;
+    }
+
+    #cabecera {
+        padding: 10px 15px;
+    }
+    .menu-horizontal {
+        flex-direction: column;
+        gap: 5px;
+        margin-top: 5px;
+    }
+
+    .menu-link {
+        padding: 5px 10px;
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .slider-container {
+        height: 300px;
+    }
+
+    .video-section,
+    .content-section {
+        padding: 30px 15px;
+        margin: 30px auto;
+    }
 }
